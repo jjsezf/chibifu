@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>赤壁赋 · 学习雅集</title>
+<style>
+  :root {
+    --ink: #2c2825;
+    --ink-light: #5a544c;
+    --cinnabar: #9e2f2f;
+    --paper: #f6f1e6;
+    --paper-dark: #e8dfcd;
+    --line: #d1c4b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: "KaiTi", "STKaiti", "Songti SC", serif;
+    background-color: var(--paper);
+    background-image: 
+      radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 70%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    color: var(--ink);
+    line-height: 1.9;
+    overflow-x: hidden;
+  }
+
+  /* 首页 */
+  #home-view {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: opacity 0.4s ease;
+  }
+
+  .hero-title {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .hero-title h1 {
+    font-size: 36px;
+    letter-spacing: 8px;
+    color: var(--ink);
+    font-weight: normal;
+    position: relative;
+    display: inline-block;
+  }
+
+  /* 这里就是修改后的“苏轼”小框框 */
+  .sub-title {
+    display: block;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--cinnabar);
+    margin-top: 10px;
+    border: 1px solid var(--cinnabar);
+    padding: 2px 10px;
+    border-radius: 20px;
+    width: fit-content;
+    margin: 10px auto 0;
+    font-family: "Songti SC", serif;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .menu-card {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(158, 47, 47, 0.05) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-color: var(--cinnabar);
+  }
+  .menu-card:hover::before { opacity: 1; }
+
+  .menu-card .chapter-no {
+    font-size: 13px;
+    color: var(--cinnabar);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .menu-card h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  /* 详情页视图 */
+  #detail-view {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--paper);
+    z-index: 10;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    height: 56px;
+    background: rgba(246, 241, 230, 0.9);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 20;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 8px;
+  }
+  .back-btn svg { width: 20px; height: 20px; }
+
+  .detail-title {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-right: 30px;
+  }
+
+  .detail-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 20px 60px;
+  }
+
+  .img-container {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .img-container:active {
+    transform: scale(0.98);
+  }
+
+  .img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .image-preview {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .image-preview.show { display: flex; opacity: 1; }
+  .image-preview img {
+    max-width: 95%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .text-content h3 {
+    font-size: 20px;
+    color: var(--cinnabar);
+    margin: 30px 0 15px;
+    padding-left: 12px;
+    border-left: 4px solid var(--cinnabar);
+    letter-spacing: 1px;
+  }
+
+  .text-content p {
+    font-size: 16px;
+    color: var(--ink-light);
+    margin-bottom: 18px;
+    text-align: justify;
+    line-height: 2;
+  }
+
+  .text-content strong { color: var(--ink); font-weight: bold; }
+
+  .quote-box {
+    background: rgba(232, 223, 205, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed var(--line);
+    margin: 20px 0;
+    font-size: 15.5px;
+    color: var(--ink);
+    white-space: pre-wrap;
+    line-height: 2.1;
+    text-align: justify;
+  }
+
+  .text-content ul { padding-left: 20px; margin-bottom: 20px; }
+  .text-content li { font-size: 16px; color: var(--ink-light); margin-bottom: 10px; }
+  .text-content li strong { color: var(--cinnabar); }
+
+  @media (max-width: 600px) {
+    .menu-grid { grid-template-columns: 1fr; }
+    .hero-title h1 { font-size: 28px; }
+    .img-container { height: 200px; }
+    .detail-content { padding: 70px 16px 40px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 首页 -->
+  <div id="home-view">
+    <div class="hero-title">
+      <h1>赤壁赋</h1>
+      <!-- 👇 这里就是改好的“苏轼” -->
+      <div class="sub-title">苏轼</div> 
+    </div>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="openDetail(0)">
+        <span class="chapter-no">卷一</span>
+        <h2>创作背景</h2>
+      </div>
+      <div class="menu-card" onclick="openDetail(1)">
+        <span class="chapter-no">卷二</span>
+        <h2>原文译文</h2>
+      </div>
+      <div class="menu-card" onclick="openDetail(2)">
+        <span class="chapter-no">卷三</span>
+        <h2>重点解析</h2>
+      </div>
+      <div class="menu-card" onclick="openDetail(3)">
+        <span class="chapter-no">卷四</span>
+        <h2>影响意义</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- 详情页 -->
+  <div id="detail-view">
+    <div class="top-bar">
+      <div class="back-btn" onclick="closeDetail()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        返回
+      </div>
+      <div class="detail-title" id="view-title">板块</div>
+    </div>
+
+    <div class="detail-content">
+      <div class="img-container" id="img-box" onclick="togglePreview(this)">
+        <img id="view-img" src="" alt="配图">
+      </div>
+
+      <div class="text-content" id="view-text"></div>
+    </div>
+  </div>
+
+  <!-- 图片全屏预览 -->
+  <div class="image-preview" id="preview-layer" onclick="closePreview()">
+    <img id="preview-img" src="" alt="预览">
+  </div>
+
+<script>
+  // 图片路径配置：把 "./imgX.jpg" 改成你文件夹里真实的图片名字
+  const pageData = [
+    {
+      title: "创作背景",
+      image: "./img7.jpg", 
+      text: `
+        <h3>时代背景</h3>
+        <p>本篇写于北宋元丰五年（1082年），苏轼遭遇<strong>乌台诗案</strong>之后，被贬黄州，担任黄州团练副使。属于贬谪闲官，行动受到一定限制，仕途跌入低谷。</p>
+        <p>当时新旧党争激烈，苏轼既不完全赞同激进变法，也不完全依附旧党。被贬黄州期间，他寄情山水，研读佛道思想，在苦闷中完成精神自我和解，《前赤壁赋》就是这一时期的代表作品。<br><strong>注意：</strong>文中的赤壁并不是三国赤壁古战场，而是黄州当地赤鼻矶，属于借地抒怀。</p>
+        <h3>作者处境</h3>
+        <p>死里逃生被贬黄州，政治理想落空，内心交织失意与悲凉，同时又借江月、老庄思想自我开导，形成旷达通透的人生态度。这篇赋就是他内心矛盾与自我释怀的文字记录。</p>
+      `
+    },
+    {
+      title: "原文译文",
+      image: "./img3.jpg",
+      text: `
+        <h3>原文</h3>
+        <div class="quote-box">壬戌之秋，七月既望，苏子与客泛舟游于赤壁之下。清风徐来，水波不兴。举酒属客，诵明月之诗，歌窈窕之章。少焉，月出于东山之上，徘徊于斗牛之间。白露横江，水光接天。纵一苇之所如，凌万顷之茫然。浩浩乎如冯虚御风，而不知其所止；飘飘乎如遗世独立，羽化而登仙。
+
+于是饮酒乐甚，扣舷而歌之。歌曰：“桂棹兮兰桨，击空明兮溯流光。渺渺兮予怀，望美人兮天一方。”客有吹洞箫者，倚歌而和之。其声呜呜然，如怨如慕，如泣如诉，余音袅袅，不绝如缕。舞幽壑之潜蛟，泣孤舟之嫠妇。
+
+苏子愀然，正襟危坐而问客曰：“何为其然也？”
+
+客曰：“‘月明星稀，乌鹊南飞’，此非曹孟德之诗乎？西望夏口，东望武昌，山川相缪，郁乎苍苍，此非孟德之困于周郎者乎？方其破荆州，下江陵，顺流而东也，舳舻千里，旌旗蔽空，酾酒临江，横槊赋诗，固一世之雄也，而今安在哉？况吾与子渔樵于江渚之上，侣鱼虾而友麋鹿，驾一叶之扁舟，举匏樽以相属。寄蜉蝣于天地，渺沧海之一粟。哀吾生之须臾，羡长江之无穷。挟飞仙以遨游，抱明月而长终。知不可乎骤得，托遗响于悲风。”
+
+苏子曰：“客亦知夫水与月乎？逝者如斯，而未尝往也；盈虚者如彼，而卒莫消长也。盖将自其变者而观之，则天地曾不能以一瞬；自其不变者而观之，则物与我皆无尽也，而又何羡乎！且夫天地之间，物各有主，苟非吾之所有，虽一毫而莫取。惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色，取之无禁，用之不竭，是造物者之无尽藏也，而吾与子之所共适。”
+
+客喜而笑，洗盏更酌。肴核既尽，杯盘狼籍。相与枕藉乎舟中，不知东方之既白。</div>
+        <h3>白话译文</h3>
+        <div class="quote-box">壬戌年秋天，七月十六，我和友人在赤壁之下泛舟游玩。清风缓缓吹来，水面波澜平静。举起酒杯劝友人饮酒，吟诵《明月》诗篇，歌唱“窈窕”的篇章。没过多久，明月从东山升起，在斗宿、牛宿之间缓缓徘徊。白茫茫水汽铺满江面，水光与天际连成一片。任凭小船随意飘荡，越过浩渺无边的万顷江面。浩浩荡荡仿佛乘风凌空飞翔，不知道停留在何处；飘飘然如同脱离尘世，飞升成仙。
+
+这时喝酒喝得十分畅快，敲击船舷放声歌唱。歌词唱道：“桂木船棹，兰木船桨，拨开月光映照的清波，在月光流动的水面逆流而上。我的情思悠远绵长，心中思念的美人，却远在天的另一方。”有位客人吹洞箫，跟着歌声应和。箫声呜呜咽咽，好似哀怨，又好似思慕，如同哭泣，如同倾诉；余音婉转悠长，像细丝绵绵不绝。使深谷里潜伏蛟龙起舞，让孤舟上的寡妇落泪。
+
+我神色变得忧伤，整理衣襟端正坐好，问客人：“箫声为什么这样悲凉？”
+
+客人说：“‘月明星稀，乌鹊南飞’，这不是曹操的诗句吗？向西望见夏口，向东望见武昌，山水盘绕，草木苍翠，这不正是曹操被周瑜围困的地方？当年他攻破荆州，拿下江陵，顺江东下，战船绵延千里，旗帜遮蔽天空，面对大江饮酒，横握长矛吟诗，本是一代英雄，如今又在哪里呢？何况我与你，在江边沙洲捕鱼砍柴，把鱼虾当作伴侣，把麋鹿当作朋友；驾一叶小船，举起葫芦酒杯互相劝酒。我们如同蜉蝣寄身广阔天地，渺小得像大海里一粒米粒。哀叹我们生命短暂，羡慕长江无穷无尽。想要同仙人遨游，与明月永世相伴。知道这不可能轻易得到，只好把悲凉箫声寄托给秋风。”
+
+我说：“你也了解江水和月亮吗？江水不断流逝，却并没有真正流走；月亮时圆时缺，但终究没有增减。如果从变化的一面看，天地万物，连一瞬间都不能保持原样；从不变的一面看，万物和我们人类都是永恒无尽的，又有什么值得羡慕！天地之间，万物各有归属，如果不属于我，一丝一毫也不能求取。只有江上清风，山间明月，耳朵听到便是动听声音，眼睛看到便是美丽景色；获取它们无人禁止，享用它们永不枯竭。这是大自然无穷无尽的宝藏，是我和你可以共同享受的。”
+
+客人听完高兴地笑了，洗净酒杯重新斟酒。菜肴果品全部吃完，杯子盘子杂乱摆放。大家互相枕靠着睡在船中，不知不觉东方已经泛白。</div>
+      `
+    },
+    {
+      title: "重点解析",
+      image: "./img5.jpg",
+      text: `
+        <h3>情感线索：乐 → 悲 → 乐</h3>
+        <p><strong>乐：</strong>夜游江景，清风明月，泛舟饮酒，沉醉山水之乐。<br>
+        <strong>悲：</strong>箫声悲凉，凭吊历史英雄曹操，感叹英雄消逝；感慨人生命短暂渺小，对比长江宇宙永恒，生出人生虚无的悲伤。<br>
+        <strong>乐（超脱之乐）：</strong>苏轼用水月做比喻，阐发变与不变哲理，消解悲伤，主客和解，回归旷达释然。</p>
+
+        <h3>核心哲理句解析</h3>
+        <p><strong>盖将自其变者而观之，则天地曾不能以一瞬；自其不变者而观之，则物与我皆无尽也，而又何羡乎！</strong><br>
+        释义：从事物变化角度看，天地万物每一刻都在改变；从事物不变角度，人与万物都是永恒的，不必哀叹生命短暂。<br>
+        这是全文思想核心，融合道家、佛家思想，是苏轼贬谪时期自我精神解脱的关键表达。</p>
+
+        <p><strong>寄蜉蝣于天地，渺沧海之一粟。哀吾生之须臾，羡长江之无穷。</strong><br>
+        客人的感叹：人在宇宙面前渺小，生命短暂，羡慕天地永恒，是古代文人常见生命感慨。</p>
+
+        <p><strong>惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色，取之无禁，用之不竭，是造物者之无尽藏也。</strong><br>
+        不必追逐功名，大自然的风月可以免费享用，是精神安放的归宿。</p>
+
+        <h3>重点文言关键词</h3>
+        <ul>
+          <li><strong>属（zhǔ）客：</strong>劝酒</li>
+          <li><strong>既望：</strong>农历每月十六</li>
+          <li><strong>冯（píng）虚御风：</strong>冯通凭，乘</li>
+          <li><strong>愀（qiǎo）然：</strong>神色忧愁</li>
+          <li><strong>侣鱼虾而友麋鹿：</strong>意动用法，以鱼虾为伴，以麋鹿为友</li>
+          <li><strong>卒莫消长：</strong>终究没有增减</li>
+          <li><strong>共适：</strong>共同享用</li>
+        </ul>
+
+        <h3>写作手法：情景理交融</h3>
+        <p>写景：秋江月夜的优美画面；<br>
+        抒情：欢乐、悲伤、旷达的情感流转；<br>
+        说理：借江水明月讲变与不变的人生哲理。<br>
+        景、情、理三者紧密结合，是本文最大艺术特色。</p>
+      `
+    },
+    {
+      title: "影响意义",
+      image: "./img2.jpg",
+      text: `
+        <h3>思想意义</h3>
+        <p>《赤壁赋》记录苏轼贬谪困境中的精神突围。面对仕途失意，没有沉溺痛苦，借助自然与哲思完成自我开导。它告诉后人：人生有失意苦难，换一个看待世界的角度，就可以获得精神解脱，体现宋代文人儒释道融合的精神境界。</p>
+        <p>文中“变与不变”的辩证思考，不消极避世，也不执着功名，追求精神自由，成为后世无数失意文人的精神范本。</p>
+
+        <h3>文学地位与影响</h3>
+        <p><strong>1、宋代文赋的巅峰代表作。</strong>打破传统赋严格骈俪格式，散文笔法，自由流畅，把写景、抒情、哲理融为一体，推动文赋文体成熟。</p>
+        <p><strong>2、名句流传千古。</strong>“清风徐来，水波不兴”“寄蜉蝣于天地，渺沧海之一粟”等名句广泛被后世引用。</p>
+        <p><strong>3、前后双璧。</strong>与《后赤壁赋》合称“前后赤壁赋”，是苏轼黄州时期的双璧，后世绘画、书法大量以此为题材创作。</p>
+        <p><strong>4、现代语文教材必学篇目。</strong>代表宋代散文最高成就之一。</p>
+      `
+    }
+  ];
+
+  const homeView = document.getElementById('home-view');
+  const detailView = document.getElementById('detail-view');
+  const viewTitle = document.getElementById('view-title');
+  const viewImg = document.getElementById('view-img');
+  const viewText = document.getElementById('view-text');
+  const previewLayer = document.getElementById('preview-layer');
+  const previewImg = document.getElementById('preview-img');
+
+  function openDetail(index) {
+    const data = pageData[index];
+    viewTitle.innerText = data.title;
+    viewImg.src = data.image;
+    viewText.innerHTML = data.text;
+
+    homeView.style.opacity = '0';
+    setTimeout(() => {
+      homeView.style.display = 'none';
+      detailView.style.display = 'block';
+      detailView.scrollTop = 0; 
+      void detailView.offsetWidth; 
+      detailView.style.opacity = '1';
+    }, 300);
+  }
+
+  function closeDetail() {
+    detailView.style.opacity = '0';
+    setTimeout(() => {
+      detailView.style.display = 'none';
+      homeView.style.display = 'flex';
+      void homeView.offsetWidth;
+      homeView.style.opacity = '1';
+    }, 300);
+  }
+
+  function togglePreview(imgBox) {
+    const imgSrc = imgBox.querySelector('img').src;
+    previewImg.src = imgSrc;
+    previewLayer.classList.add('show');
+  }
+
+  function closePreview() {
+    previewLayer.classList.remove('show');
+  }
+</script>
+
+</body>
+</html>
